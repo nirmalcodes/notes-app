@@ -1,0 +1,58 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+
+    --scrollbar-size: 12px;
+    --bakcground: #ffffff;
+}
+
+*,
+*::before,
+*::after {
+    scroll-behavior: smooth;
+}
+
+::-webkit-scrollbar {
+    width: var(--scrollbar-size);
+    height: var(--scrollbar-size);
+}
+::-webkit-scrollbar-track {
+    background: var(--bakcground);
+}
+::-webkit-scrollbar-thumb {
+    border-radius: 16px;
+    @apply bg-gray-600/80;
+}
+::-webkit-scrollbar-thumb:hover {
+    @apply bg-gray-600;
+}
+
+body {
+    position: relative;
+    min-height: 100vh;
+    @apply overflow-x-hidden;
+}
+
+#root {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    @apply overflow-x-hidden bg-[var(--bakcground)];
+}
+
+@layer components {
+    .container {
+        @apply w-full sm:max-w-[604px] md:max-w-[720px] lg:max-w-[992px] xl:max-w-[1220px] 2xl:max-w-[1456px];
+    }
+
+    .color-change {
+        @apply bg-red-600 transition-all duration-300 ease-in-out sm:bg-green-600 md:bg-blue-600 lg:bg-orange-600 xl:bg-indigo-600 2xl:bg-pink-600;
+    }
+}
