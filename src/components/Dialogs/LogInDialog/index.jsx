@@ -4,7 +4,6 @@ import LogInForm from '../../Forms/LogInForm';
 import SignUpForm from '../../Forms/SignUpForm';
 import DividerWithText from '../../DividerWithText';
 import GoogleAuthButton from '../../SocialAuthButtons/GoogleAuthButton';
-import AppleAuthButton from '../../SocialAuthButtons/AppleButton';
 
 const LogInDialog = ({ onDialogOpen, onDialogClose }) => {
     const [formMode, setFormMode] = useState('login');
@@ -69,7 +68,6 @@ const LogInDialog = ({ onDialogOpen, onDialogClose }) => {
                                     {/* one click logins */}
                                     <div className='flex gap-x-4 gap-y-3 md:flex-col'>
                                         <GoogleAuthButton />
-                                        <AppleAuthButton />
                                     </div>
                                     <div className='mt-8 md:mt-12'>
                                         <DividerWithText
