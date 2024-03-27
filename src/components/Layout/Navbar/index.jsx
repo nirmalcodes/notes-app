@@ -5,7 +5,7 @@ import { Menu, Transition } from '@headlessui/react';
 import LogInDialog from '../../Dialogs/LogInDialog';
 
 const Navbar = () => {
-    const [isOpen, setIsOpen] = useState(true);
+    const [isOpen, setIsOpen] = useState(false);
 
     const openDialog = () => {
         setIsOpen(true);
