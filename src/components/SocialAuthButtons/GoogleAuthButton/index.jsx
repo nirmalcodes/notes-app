@@ -36,7 +36,6 @@ const GoogleAuthButton = () => {
             }
         } catch (error) {
             console.error(error);
-            alert(error);
         }
     };
 
@@ -52,11 +51,9 @@ const GoogleAuthButton = () => {
                     alt='google logo'
                     width={24}
                     height={24}
-                    className='md:mr-2'
+                    className='mr-2'
                 />
-                <span className='hidden md:inline-block'>
-                    Continue with Google
-                </span>
+                <span className='inline-block'>Continue with Google</span>
             </button>
         </>
     );
