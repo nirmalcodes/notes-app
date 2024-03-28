@@ -20,7 +20,7 @@ const Navbar = () => {
         try {
             await signOut(auth);
         } catch (error) {
-            console.error(error);
+            // console.error(error);
         }
     };
 

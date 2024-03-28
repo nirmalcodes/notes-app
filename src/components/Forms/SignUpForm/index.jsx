@@ -81,7 +81,7 @@ const SignUpForm = ({ onComplete }) => {
                 onComplete();
                 
             } catch (error) {
-                console.error(error);
+                // console.error(error);
                 const errorCode = error.code;
 
                 if (errorCode === 'auth/email-already-in-use') {

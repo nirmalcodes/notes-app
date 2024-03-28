@@ -8,7 +8,7 @@ const LogOutButton = () => {
             // localStorage.removeItem('user');
             // console.log('User logged out');
         } catch (error) {
-            console.error(error);
+            // console.error(error);
         }
     };
 

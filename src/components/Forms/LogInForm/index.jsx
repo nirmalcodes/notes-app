@@ -76,7 +76,7 @@ const LogInForm = ({ onComplete }) => {
                     if (docSnap.exists()) {
                         // console.log('Document data:', docSnap.data());
                     } else {
-                        console.log('No such document!');
+                        // console.log('No such document!');
                         const usersCollectionRef = collection(
                             firestore,
                             'users'
@@ -97,7 +97,7 @@ const LogInForm = ({ onComplete }) => {
                 setIsLoading(false);
                 onComplete();
             } catch (error) {
-                console.error(error);
+                // console.error(error);
                 const errorCode = error.code;
 
                 if (errorCode === 'auth/invalid-credential') {

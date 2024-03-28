@@ -37,7 +37,7 @@ const GoogleAuthButton = ({ onComplete }) => {
 
             onComplete();
         } catch (error) {
-            console.error(error);
+            // console.error(error);
         }
     };
 
