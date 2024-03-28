@@ -1,18 +1,29 @@
 import { Suspense, lazy } from 'react';
-import Layout from './components/Layout';
 import Spinner from './components/Spinner';
-import ROUTES from './routes';
 import { AuthProvider } from './contexts/AuthContext';
+import { Route, Routes } from 'react-router-dom';
+import Layout from './components/Layout';
+import ROUTES from './routes';
+
 const Home = lazy(() => import('./pages/Home'));
+const PageNotFound = lazy(() => import('./pages/PageNotFound'));
 
 const App = () => {
     return (
         <>
             <Suspense fallback={<Spinner />}>
                 <AuthProvider>
-                    <Layout>
-                        <Home />
-                    </Layout>
+                    <Routes>
+                        <Route
+                            path='/'
+                            element={
+                                <Layout>
+                                    <Home />
+                                </Layout>
+                            }
+                        />
+                        <Route path='*' element={<PageNotFound />} />
+                    </Routes>
                 </AuthProvider>
             </Suspense>
         </>
