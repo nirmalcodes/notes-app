@@ -26,7 +26,7 @@ const Navbar = () => {
 
     return (
         <>
-            <header className='fixed inset-x-0 top-0 z-[9999] border-b bg-white'>
+            <header className='fixed inset-x-0 top-0 z-40 border-b bg-white'>
                 <div className='container flex items-center px-4 py-2'>
                     <Link
                         to={'/'}
