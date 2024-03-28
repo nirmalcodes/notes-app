@@ -57,9 +57,13 @@ const LogInDialog = ({ onDialogOpen, onDialogClose }) => {
                                     {/* forms */}
                                     <div className='mt-5'>
                                         {formMode == 'login' ? (
-                                            <LogInForm />
+                                            <LogInForm
+                                                onComplete={closeDialog}
+                                            />
                                         ) : (
-                                            <SignUpForm />
+                                            <SignUpForm
+                                                onComplete={closeDialog}
+                                            />
                                         )}
                                     </div>
                                     <div className='my-5'>
@@ -67,7 +71,9 @@ const LogInDialog = ({ onDialogOpen, onDialogClose }) => {
                                     </div>
                                     {/* one click logins */}
                                     <div className='flex gap-x-4 gap-y-3 md:flex-col'>
-                                        <GoogleAuthButton />
+                                        <GoogleAuthButton
+                                            onComplete={closeDialog}
+                                        />
                                     </div>
                                     <div className='mt-8 md:mt-12'>
                                         <DividerWithText

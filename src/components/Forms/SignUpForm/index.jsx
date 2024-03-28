@@ -6,7 +6,7 @@ import { createUserWithEmailAndPassword } from '@firebase/auth';
 import { auth, firestore } from '../../../services/firebase';
 import { collection, doc, serverTimestamp, setDoc } from '@firebase/firestore';
 
-const SignUpForm = () => {
+const SignUpForm = ({ onComplete }) => {
     const [isToggled, setIstoggled] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [formData, setFormData] = useState({
@@ -60,7 +60,7 @@ const SignUpForm = () => {
                 );
 
                 const regUser = userCredential.user;
-                console.log(regUser);
+                // console.log(regUser);
                 const regUID = userCredential.user.uid;
 
                 if (regUser) {
@@ -78,8 +78,10 @@ const SignUpForm = () => {
                 });
 
                 setIsLoading(false);
+                onComplete();
+                
             } catch (error) {
-                console.error(error);
+                // console.error(error);
                 const errorCode = error.code;
 
                 if (errorCode === 'auth/email-already-in-use') {

@@ -1,10 +1,13 @@
-import { lazy, useState } from 'react';
+import { lazy, useContext, useState } from 'react';
 import { FaPlus } from 'react-icons/fa6';
 import Masonry, { ResponsiveMasonry } from 'react-responsive-masonry';
 import MemoDialog from '../../components/Dialogs/MemoDialog';
+import { AuthContext } from '../../contexts/AuthContext';
+
 const MemoCard = lazy(() => import('../../components/MemoCard'));
 
 const Home = () => {
+    const { user } = useContext(AuthContext);
     const [isOpen, setIsOpen] = useState(false);
 
     const openDialog = () => {
@@ -13,7 +16,7 @@ const Home = () => {
 
     return (
         <>
-            <div className='container mt-10 bg-curious-blue-100/0 p-4'>
+            <div className='container p-4'>
                 <ResponsiveMasonry
                     columnsCountBreakPoints={{
                         424: 1,
@@ -99,13 +102,17 @@ const Home = () => {
                     </Masonry>
                 </ResponsiveMasonry>
             </div>
-            <button
-                type='button'
-                onClick={openDialog}
-                className='fixed bottom-6 right-6 z-20 flex h-[48px] w-[48px] items-center justify-center rounded-full bg-curious-blue-500 p-2 text-white drop-shadow-md transition-all duration-300 ease-in-out hover:bg-curious-blue-600 active:bg-curious-blue-700 disabled:bg-curious-blue-100 disabled:text-curious-blue-400 lg:absolute'
-            >
-                <FaPlus className='text-2xl' />
-            </button>
+
+            {user && (
+                <button
+                    type='button'
+                    onClick={openDialog}
+                    className='fixed bottom-6 right-6 z-20 flex h-[48px] w-[48px] items-center justify-center rounded-full bg-curious-blue-500 p-2 text-white drop-shadow-md transition-all duration-300 ease-in-out hover:bg-curious-blue-600 active:bg-curious-blue-700 disabled:bg-curious-blue-100 disabled:text-curious-blue-400 lg:absolute'
+                >
+                    <FaPlus className='text-2xl' />
+                </button>
+            )}
+
             <MemoDialog onDialogOpen={isOpen} onDialogClose={setIsOpen} />
         </>
     );

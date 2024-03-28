@@ -5,7 +5,7 @@ const Layout = ({ children }) => {
     return (
         <>
             <Navbar />
-            <main className='relative flex-1'>{children}</main>
+            <main className='relative flex-1 pt-16'>{children}</main>
             <Footer />
         </>
     );

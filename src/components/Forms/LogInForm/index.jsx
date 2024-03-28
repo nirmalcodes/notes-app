@@ -4,9 +4,15 @@ import LoadingButton from '../../LoadingButton';
 import { isValidEmail, isValidPassword } from '../../../utils/validationUtils';
 import { signInWithEmailAndPassword } from '@firebase/auth';
 import { auth, firestore } from '../../../services/firebase';
-import { collection, doc, getDoc, serverTimestamp, setDoc } from '@firebase/firestore';
+import {
+    collection,
+    doc,
+    getDoc,
+    serverTimestamp,
+    setDoc,
+} from '@firebase/firestore';
 
-const LogInForm = () => {
+const LogInForm = ({ onComplete }) => {
     const [isToggled, setIstoggled] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [formData, setFormData] = useState({
@@ -70,7 +76,7 @@ const LogInForm = () => {
                     if (docSnap.exists()) {
                         // console.log('Document data:', docSnap.data());
                     } else {
-                        console.log('No such document!');
+                        // console.log('No such document!');
                         const usersCollectionRef = collection(
                             firestore,
                             'users'
@@ -89,8 +95,9 @@ const LogInForm = () => {
                 });
 
                 setIsLoading(false);
+                onComplete();
             } catch (error) {
-                console.error(error);
+                // console.error(error);
                 const errorCode = error.code;
 
                 if (errorCode === 'auth/invalid-credential') {
