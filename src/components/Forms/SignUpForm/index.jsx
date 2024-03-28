@@ -60,7 +60,7 @@ const SignUpForm = ({ onComplete }) => {
                 );
 
                 const regUser = userCredential.user;
-                console.log(regUser);
+                // console.log(regUser);
                 const regUID = userCredential.user.uid;
 
                 if (regUser) {
