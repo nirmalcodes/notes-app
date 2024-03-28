@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { CiMemoPad } from 'react-icons/ci';
 import { Menu, Transition } from '@headlessui/react';
 import LogInDialog from '../../Dialogs/LogInDialog';
+import LogOutButton from '../../LogOutButton';
 
 const Navbar = () => {
     const [isOpen, setIsOpen] = useState(false);
@@ -23,6 +24,7 @@ const Navbar = () => {
                         MemoPad
                     </Link>
                     <div className='ml-auto flex gap-x-3'>
+                        <LogOutButton />
                         <button
                             type='button'
                             onClick={openDialog}
