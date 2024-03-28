@@ -16,7 +16,7 @@ const Home = () => {
 
     return (
         <>
-            <div className='container mt-10 bg-curious-blue-100/0 p-4'>
+            <div className='container p-4'>
                 <ResponsiveMasonry
                     columnsCountBreakPoints={{
                         424: 1,
