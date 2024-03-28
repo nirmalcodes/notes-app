@@ -1,11 +1,13 @@
-import { Fragment, useState } from 'react';
+import { Fragment, useContext, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { CiMemoPad } from 'react-icons/ci';
 import { Menu, Transition } from '@headlessui/react';
 import LogInDialog from '../../Dialogs/LogInDialog';
 import LogOutButton from '../../LogOutButton';
+import { AuthContext } from '../../../contexts/AuthContext';
 
 const Navbar = () => {
+    const { user } = useContext(AuthContext);
     const [isOpen, setIsOpen] = useState(false);
 
     const openDialog = () => {
@@ -24,14 +26,17 @@ const Navbar = () => {
                         MemoPad
                     </Link>
                     <div className='ml-auto flex gap-x-3'>
-                        <LogOutButton />
-                        <button
-                            type='button'
-                            onClick={openDialog}
-                            className='rounded-full bg-curious-blue-500 px-8 py-2 text-white transition-all duration-300 ease-in-out hover:bg-curious-blue-600 active:bg-curious-blue-700 disabled:bg-curious-blue-100 disabled:text-curious-blue-400'
-                        >
-                            Login
-                        </button>
+                        {user ? (
+                            <LogOutButton />
+                        ) : (
+                            <button
+                                type='button'
+                                onClick={openDialog}
+                                className='rounded-full bg-curious-blue-500 px-8 py-2 text-white transition-all duration-300 ease-in-out hover:bg-curious-blue-600 active:bg-curious-blue-700 disabled:bg-curious-blue-100 disabled:text-curious-blue-400'
+                            >
+                                Login
+                            </button>
+                        )}
                         <div hidden>
                             <Menu
                                 as='div'

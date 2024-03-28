@@ -9,7 +9,7 @@ import {
     setDoc,
 } from '@firebase/firestore';
 
-const GoogleAuthButton = () => {
+const GoogleAuthButton = ({ onComplete }) => {
     const signInWithGoogle = async () => {
         try {
             const provider = new GoogleAuthProvider();
@@ -34,6 +34,8 @@ const GoogleAuthButton = () => {
                     });
                 }
             }
+
+            onComplete();
         } catch (error) {
             console.error(error);
         }
