@@ -1,14 +1,32 @@
-import { Fragment } from 'react';
-import { FaEllipsisVertical, FaTrashCan, FaPen } from 'react-icons/fa6';
+import { Fragment, useContext } from 'react';
+import { AuthContext } from '../../contexts/AuthContext';
+import { FaEllipsisVertical } from 'react-icons/fa6';
 import { Menu, Transition } from '@headlessui/react';
 import { formatTimestamp } from '../../utils/dateUtils';
+import { firestore } from '../../services/firebase';
+import { deleteDoc, doc } from '@firebase/firestore';
 
-const MemoCard = ({ title, children, timestamp }) => {
+const MemoCard = ({ id, title, children, status, timestamp, onClick }) => {
+    const { user } = useContext(AuthContext);
     const formattedTimestamp = formatTimestamp(timestamp);
+
+    const handleDelete = async (e) => {
+        e.preventDefault();
+
+        try {
+            await deleteDoc(doc(firestore, 'memos', id));
+            // console.log('memo deleted successfully');
+        } catch (error) {
+            console.error('Error deleting memo: ', error);
+        }
+    };
 
     return (
         <>
-            <div className='overflow-hidden rounded-xl border bg-white shadow-lg shadow-black/5'>
+            <div
+                className='rounded-xl border bg-white shadow-lg shadow-black/5'
+                onClick={onClick}
+            >
                 <div className='items-cente flex px-3 pt-3'>
                     <p className='text-base font-medium'>{title ?? ''}</p>
                     <Menu
@@ -29,14 +47,19 @@ const MemoCard = ({ title, children, timestamp }) => {
                         >
                             <Menu.Items className='absolute right-0 mt-2 w-44 origin-top-right divide-y divide-gray-100 rounded-md bg-white px-1 py-1 shadow-lg ring-1 ring-black/5 focus:outline-none'>
                                 <Menu.Item>
-                                    <button className='group flex w-full items-center rounded-md px-2 py-2 ui-active:bg-gray-100'>
-                                        <FaPen className='mr-2' />
+                                    <button
+                                        type='button'
+                                        className='group flex w-full items-center rounded-md px-2 py-2 ui-active:bg-gray-100'
+                                    >
                                         Edit
                                     </button>
                                 </Menu.Item>
                                 <Menu.Item>
-                                    <button className='group flex w-full items-center rounded-md px-2 py-2 ui-active:bg-gray-100'>
-                                        <FaTrashCan className='mr-2' />
+                                    <button
+                                        type='button'
+                                        onClick={handleDelete}
+                                        className='group flex w-full items-center rounded-md px-2 py-2 ui-active:bg-gray-100'
+                                    >
                                         Delete
                                     </button>
                                 </Menu.Item>
@@ -48,7 +71,7 @@ const MemoCard = ({ title, children, timestamp }) => {
                     <div className='line-clamp-[15] text-base'>{children}</div>
                 </div>
                 <div className='px-3 pb-3 text-right text-xs text-gray-400'>
-                    {formattedTimestamp ?? ''}
+                    {`${status}, ${formattedTimestamp ?? ''}`}
                 </div>
             </div>
         </>
