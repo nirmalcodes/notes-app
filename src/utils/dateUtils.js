@@ -14,6 +14,6 @@ export function formatTimestamp(timestampInSeconds) {
     } else if (isYesterday(formattedDate)) {
         return format(formattedDate, "'Yesterday,' h:mm a");
     } else {
-        return format(formattedDate, "'Created' MMM dd, yyyy");
+        return format(formattedDate, "MMM dd, yyyy");
     }
 }
