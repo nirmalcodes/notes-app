@@ -2,7 +2,7 @@ import { Fragment, useContext, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { CiMemoPad } from 'react-icons/ci';
 import { Menu, Transition } from '@headlessui/react';
-import LogInDialog from '../../Dialogs/LogInDialog';
+import LogInDialog from '../../Dialogs/LogIn';
 import { AuthContext } from '../../../contexts/AuthContext';
 import { signOut } from '@firebase/auth';
 import { auth } from '../../../services/firebase';

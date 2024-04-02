@@ -5,7 +5,7 @@ import SignUpForm from '../../Forms/SignUpForm';
 import DividerWithText from '../../DividerWithText';
 import GoogleAuthButton from '../../SocialAuthButtons/GoogleAuthButton';
 
-const LogInDialog = ({ onDialogOpen, onDialogClose }) => {
+const LogIn = ({ onDialogOpen, onDialogClose }) => {
     const [formMode, setFormMode] = useState('login');
 
     const closeDialog = () => {
@@ -107,4 +107,4 @@ const LogInDialog = ({ onDialogOpen, onDialogClose }) => {
     );
 };
 
-export default LogInDialog;
+export default LogIn;

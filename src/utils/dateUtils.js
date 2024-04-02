@@ -4,7 +4,8 @@ export function formatTimestamp(timestampInSeconds) {
     const timestampInMillis = timestampInSeconds * 1000;
 
     if (Number.isNaN(timestampInMillis)) {
-        return console.warn('Invalid timestamp');
+        // return console.warn('Invalid timestamp');
+        return;
     }
 
     const formattedDate = new Date(timestampInMillis);
@@ -14,6 +15,6 @@ export function formatTimestamp(timestampInSeconds) {
     } else if (isYesterday(formattedDate)) {
         return format(formattedDate, "'Yesterday,' h:mm a");
     } else {
-        return format(formattedDate, "'Created' MMM dd, yyyy");
+        return format(formattedDate, 'MMM dd, yyyy');
     }
 }
