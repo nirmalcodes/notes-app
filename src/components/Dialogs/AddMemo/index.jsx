@@ -7,73 +7,41 @@ import { addDoc, collection, serverTimestamp } from '@firebase/firestore';
 const AddMemo = ({ onDialogOpen, onDialogClose }) => {
     const { user } = useContext(AuthContext);
     const initialFocusRef = useRef(null);
-    const [isLoading, setIsLoading] = useState(false);
-    const [formData, setFormData] = useState({
-        title: '',
-        content: '',
-    });
-    const [errors, setErrors] = useState({
-        content: '',
-    });
+    const [memoContent, setMemoContent] = useState('');
 
     const closeDialog = () => {
-        setFormData({
-            title: '',
-            content: '',
-        });
+        setMemoContent('');
         onDialogClose(false);
     };
 
     const handleInputChange = (e) => {
-        const { name, value } = e.target;
-        setFormData({ ...formData, [name]: value });
-        setErrors({ ...errors, [name]: '' });
+        setMemoContent(e.target.value);
     };
 
-    const handleAddMemo = async (e) => {
-        // e.preventDefault();
-
-        setIsLoading(true);
-        setErrors({});
-
-        let validationErrors = {};
-
-        if (!formData.content.trim()) {
+    const handleAddMemo = async () => {
+        if (!memoContent.trim()) {
             closeDialog();
             return;
-            validationErrors.content =
-                'Add content to your memo before saving it';
         }
 
-        if (Object.keys(validationErrors).length > 0) {
-            setErrors(validationErrors);
-            setIsLoading(false);
-        } else {
-            try {
-                const newMemoData = {
-                    title: formData.title,
-                    content: formData.content,
-                    createdBy: user.uid,
-                    createdAt: serverTimestamp(),
-                    updatedAt: serverTimestamp(),
-                };
-                const memoRef = collection(firestore, 'memos');
-                const newMemo = await addDoc(memoRef, newMemoData);
+        try {
+            const newMemoData = {
+                content: memoContent,
+                createdBy: user.uid,
+                createdAt: serverTimestamp(),
+                updatedAt: serverTimestamp(),
+            };
 
-                console.log('Memo saved successfully:', newMemo.id);
+            const memoRef = collection(firestore, 'memos');
+            const newMemo = await addDoc(memoRef, newMemoData);
 
-                setFormData({
-                    title: '',
-                    content: '',
-                });
+            console.log('Memo saved successfully:', newMemo.id);
 
-                setIsLoading(false);
+            setMemoContent('');
 
-                closeDialog();
-            } catch (error) {
-                console.error('Error saving memo:', error);
-                setIsLoading(false);
-            }
+            closeDialog();
+        } catch (error) {
+            console.error('Error saving memo:', error);
         }
     };
 
@@ -109,24 +77,8 @@ const AddMemo = ({ onDialogOpen, onDialogClose }) => {
                                 leaveFrom='opacity-100 scale-100'
                                 leaveTo='opacity-0 scale-95'
                             >
-                                <Dialog.Panel className='w-full max-w-md transform overflow-hidden rounded-2xl bg-white px-3 py-5 text-left align-middle shadow-xl transition-all'>
-                                    <form
-                                        noValidate
-                                        autoComplete='off'
-                                        onSubmit={handleAddMemo}
-                                    >
-                                        <div className=''>
-                                            <input
-                                                type='text'
-                                                id='title'
-                                                name='title'
-                                                placeholder='Title'
-                                                spellCheck
-                                                value={formData.title}
-                                                onChange={handleInputChange}
-                                                className='inline-block w-full border-none bg-transparent font-medium placeholder:font-normal focus:outline-none focus-visible:ring-0'
-                                            />
-                                        </div>
+                                <Dialog.Panel className='w-full max-w-xl transform overflow-hidden rounded-2xl bg-white px-3 py-5 text-left align-middle shadow-xl transition-all'>
+                                    <div>
                                         <div className=''>
                                             <textarea
                                                 id='content'
@@ -135,29 +87,23 @@ const AddMemo = ({ onDialogOpen, onDialogClose }) => {
                                                 placeholder='Take a note...'
                                                 spellCheck
                                                 ref={initialFocusRef}
-                                                value={formData.content}
+                                                alue={memoContent}
                                                 onChange={handleInputChange}
-                                                className='inline-block w-full resize-none border-none bg-transparent focus:outline-none focus-visible:ring-0'
-                                            ></textarea>
+                                                className='inline-block w-full resize-none border-none bg-transparent px-4 py-3 focus:outline-none focus-visible:ring-0'
+                                            />
                                         </div>
-                                        <div className='mt-4 flex px-3'>
-                                            <div className='ml-auto flex gap-3'>
+                                        <div className='my-1 flex h-9 items-center'>
+                                            <div className='ml-auto pr-4'>
                                                 <button
                                                     type='button'
-                                                    onClick={closeDialog}
-                                                    className='inline-flex w-[120px] items-center justify-center rounded-full border border-transparent bg-curious-blue-100 px-4 py-2 font-medium text-curious-blue-600 transition-all duration-300 ease-in-out hover:bg-curious-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-curious-blue-500 focus-visible:ring-offset-2 disabled:bg-curious-blue-50 disabled:text-curious-blue-300'
+                                                    onClick={handleAddMemo}
+                                                    className='rounded px-6 py-2 text-sm font-medium transition-all duration-150 ease-in-out hover:bg-gray-200'
                                                 >
-                                                    Cancel
-                                                </button>
-                                                <button
-                                                    type='submit'
-                                                    className='inline-flex w-[120px] items-center justify-center rounded-full border border-transparent bg-curious-blue-500 px-4 py-2 font-medium text-white transition-all duration-300 ease-in-out hover:bg-curious-blue-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-curious-blue-500 focus-visible:ring-offset-2 active:bg-curious-blue-700 disabled:bg-curious-blue-100 disabled:text-curious-blue-400'
-                                                >
-                                                    Save
+                                                    Close
                                                 </button>
                                             </div>
                                         </div>
-                                    </form>
+                                    </div>
                                 </Dialog.Panel>
                             </Transition.Child>
                         </div>
