@@ -36,10 +36,10 @@ const EditMemo = ({ memoId, onDialogOpen, onDialogClose }) => {
                     const { content } = memoData;
                     setMemoContent(content);
                 } else {
-                    console.log('No such document!');
+                    // console.log('No such document!');
                 }
             } catch (error) {
-                console.error('Error fetching memos:', error);
+                // console.error('Error fetching memos:', error);
             }
         };
 
@@ -80,21 +80,21 @@ const EditMemo = ({ memoId, onDialogOpen, onDialogClose }) => {
 
             await updateDoc(memoRef, newMemoData);
 
-            console.log('Memo updated successfully');
+            // console.log('Memo updated successfully');
 
             closeDialog();
         } catch (error) {
-            console.error('Error updating memo:', error);
+            // console.error('Error updating memo:', error);
         }
     };
 
     const handleDelete = async () => {
         try {
             await deleteDoc(doc(firestore, 'memos', memoId));
-            console.log('memo deleted successfully');
+            // console.log('memo deleted successfully');
             closeDialog();
         } catch (error) {
-            console.error('Error deleting memo: ', error);
+            // console.error('Error deleting memo: ', error);
         }
     };
 

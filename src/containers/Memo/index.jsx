@@ -63,7 +63,7 @@ const MemoContainer = () => {
 
                 return unsubscribe;
             } catch (error) {
-                console.error('Error fetching memos:', error);
+                // console.error('Error fetching memos:', error);
             }
         };
 

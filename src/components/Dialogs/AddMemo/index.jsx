@@ -35,11 +35,11 @@ const AddMemo = ({ onDialogOpen, onDialogClose }) => {
             const memoRef = collection(firestore, 'memos');
             const newMemo = await addDoc(memoRef, newMemoData);
 
-            console.log('Memo saved successfully:', newMemo.id);
+            // console.log('Memo saved successfully:', newMemo.id);
 
             closeDialog();
         } catch (error) {
-            console.error('Error saving memo:', error);
+            // console.error('Error saving memo:', error);
         }
     };
 
