@@ -1,23 +1,7 @@
-import { useContext } from 'react';
-import { AuthContext } from '../../contexts/AuthContext';
 import { formatTimestamp } from '../../utils/dateUtils';
-import { firestore } from '../../services/firebase';
-import { deleteDoc, doc } from '@firebase/firestore';
 
-const MemoCard = ({ id, title, children, status, timestamp, onClick }) => {
-    const { user } = useContext(AuthContext);
+const MemoCard = ({ id, children, status, timestamp, onClick }) => {
     const formattedTimestamp = formatTimestamp(timestamp);
-
-    const handleDelete = async (e) => {
-        e.preventDefault();
-
-        try {
-            await deleteDoc(doc(firestore, 'memos', id));
-            // console.log('memo deleted successfully');
-        } catch (error) {
-            console.error('Error deleting memo: ', error);
-        }
-    };
 
     return (
         <>
