@@ -37,8 +37,6 @@ const AddMemo = ({ onDialogOpen, onDialogClose }) => {
 
             console.log('Memo saved successfully:', newMemo.id);
 
-            setMemoContent('');
-
             closeDialog();
         } catch (error) {
             console.error('Error saving memo:', error);
