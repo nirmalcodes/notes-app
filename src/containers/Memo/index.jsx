@@ -3,7 +3,7 @@ import { AuthContext } from '../../contexts/AuthContext';
 import { firestore } from '../../services/firebase';
 import {
     collection,
-    getDocs,
+    onSnapshot,
     orderBy,
     query,
     where,
@@ -23,8 +23,13 @@ const MemoContainer = () => {
         setIsOpen(true);
     };
 
+    const handleDialogClose = (value) => {
+        setActiveMemoId(null);
+        setIsOpen(value);
+    };
+
     useEffect(() => {
-        const fetchAllMemo = async () => {
+        const fetchAllMemo = () => {
             try {
                 if (!user) {
                     return;
@@ -36,32 +41,37 @@ const MemoContainer = () => {
                     where('createdBy', '==', user.uid),
                     orderBy('updatedAt', 'desc')
                 );
-                const querySnapshot = await getDocs(q);
 
-                const fetchedMemos = querySnapshot.docs.map((doc) => {
-                    const memoData = doc.data();
-                    const { createdAt, updatedAt } = memoData;
+                const unsubscribe = onSnapshot(q, (querySnapshot) => {
+                    const fetchedMemos = querySnapshot.docs.map((doc) => {
+                        const memoData = doc.data();
+                        const { createdAt, updatedAt } = memoData;
 
-                    const isCreated =
-                        createdAt.seconds === updatedAt.seconds &&
-                        createdAt.nanoseconds === updatedAt.nanoseconds;
+                        const isCreated =
+                            createdAt?.seconds === updatedAt?.seconds &&
+                            createdAt?.nanoseconds === updatedAt?.nanoseconds;
 
-                    return {
-                        id: doc.id,
-                        ...memoData,
-                        status: isCreated ? 'Created' : 'Edited',
-                    };
+                        return {
+                            id: doc.id,
+                            ...memoData,
+                            status: isCreated ? 'Created' : 'Edited',
+                        };
+                    });
+
+                    setMemos(fetchedMemos);
                 });
 
-                setMemos(fetchedMemos);
+                return unsubscribe;
             } catch (error) {
                 console.error('Error fetching memos:', error);
             }
         };
 
-        fetchAllMemo();
+        const unsubscribe = fetchAllMemo();
 
-        return () => {};
+        return () => {
+            unsubscribe();
+        };
     }, []);
 
     const renderTextWithLineBreaks = (text) => {
@@ -86,29 +96,29 @@ const MemoContainer = () => {
                 >
                     <Masonry gutter='1rem'>
                         {memos.map((memo) => {
-                            const { content, createdAt, updatedAt } = memo;
+                            const { id, content, createdAt, updatedAt } = memo;
 
                             const isCreated =
-                                createdAt.seconds === updatedAt.seconds &&
-                                createdAt.nanoseconds === updatedAt.nanoseconds;
+                                createdAt?.seconds === updatedAt?.seconds &&
+                                createdAt?.nanoseconds ===
+                                    updatedAt?.nanoseconds;
 
                             let memoTimestamp = '';
 
                             if (isCreated) {
-                                memoTimestamp = createdAt.seconds;
+                                memoTimestamp = createdAt?.seconds;
                             } else {
-                                memoTimestamp = updatedAt.seconds;
+                                memoTimestamp = updatedAt?.seconds;
                             }
 
                             return (
                                 <MemoCard
                                     id={memo?.id}
-                                    title={memo?.title}
                                     status={memo?.status}
                                     timestamp={memoTimestamp}
                                     key={memo?.id}
                                     onClick={() => {
-                                        openDialog(memo.id);
+                                        openDialog(id);
                                     }}
                                 >
                                     {renderTextWithLineBreaks(content)}
@@ -122,7 +132,7 @@ const MemoContainer = () => {
             <EditMemoDialog
                 memoId={activeMemoId}
                 onDialogOpen={isOpen}
-                onDialogClose={setIsOpen}
+                onDialogClose={handleDialogClose}
             />
         </>
     );
