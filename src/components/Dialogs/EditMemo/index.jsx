@@ -2,19 +2,19 @@ import { Fragment, useContext, useEffect, useRef, useState } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import { AuthContext } from '../../../contexts/AuthContext';
 import { firestore } from '../../../services/firebase';
-import { doc, getDoc, serverTimestamp, updateDoc } from '@firebase/firestore';
+import {
+    deleteDoc,
+    doc,
+    getDoc,
+    serverTimestamp,
+    updateDoc,
+} from '@firebase/firestore';
+import { FaRegTrashCan } from 'react-icons/fa6';
 
 const EditMemo = ({ memoId, onDialogOpen, onDialogClose }) => {
     const { user } = useContext(AuthContext);
     const initialFocusRef = useRef(null);
-    const [isLoading, setIsLoading] = useState(false);
-    const [formData, setFormData] = useState({
-        title: '',
-        content: '',
-    });
-    const [errors, setErrors] = useState({
-        content: '',
-    });
+    const [memoContent, setMemoContent] = useState('');
 
     useEffect(() => {
         const fetchMemo = async () => {
@@ -33,12 +33,9 @@ const EditMemo = ({ memoId, onDialogOpen, onDialogClose }) => {
                 if (docSnap.exists()) {
                     // console.log('Document data:', docSnap.data());
                     const memoData = docSnap.data();
-                    setFormData({
-                        title: memoData?.title,
-                        content: memoData?.content,
-                    });
+                    const { content } = memoData;
+                    setMemoContent(content);
                 } else {
-                    // docSnap.data() will be undefined in this case
                     console.log('No such document!');
                 }
             } catch (error) {
@@ -52,62 +49,46 @@ const EditMemo = ({ memoId, onDialogOpen, onDialogClose }) => {
     }, [memoId]);
 
     const closeDialog = () => {
-        setFormData({
-            title: '',
-            content: '',
-        });
+        setMemoContent('');
         onDialogClose(false);
     };
 
     const handleInputChange = (e) => {
-        const { name, value } = e.target;
-        setFormData({ ...formData, [name]: value });
-        setErrors({ ...errors, [name]: '' });
+        setMemoContent(e.target.value);
     };
 
-    const handleEditMemo = async (e) => {
-        e.preventDefault();
-
-        setIsLoading(true);
-        setErrors({});
-
-        let validationErrors = {};
-
-        if (!formData.content.trim()) {
+    const handleEditMemo = async () => {
+        if (!memoContent.trim()) {
             closeDialog();
             return;
-            validationErrors.content =
-                'Add content to your memo before saving it';
         }
 
-        if (Object.keys(validationErrors).length > 0) {
-            setErrors(validationErrors);
-            setIsLoading(false);
-        } else {
-            try {
-                const newMemoData = {
-                    title: formData.title,
-                    content: formData.content,
-                    updatedAt: serverTimestamp(),
-                };
+        try {
+            const newMemoData = {
+                content: memoContent,
+                updatedAt: serverTimestamp(),
+            };
 
-                const memoRef = doc(firestore, 'memos', memoId);
-                await updateDoc(memoRef, newMemoData);
+            const memoRef = doc(firestore, 'memos', memoId);
+            await updateDoc(memoRef, newMemoData);
 
-                console.log('Memo updated successfully');
+            console.log('Memo updated successfully');
 
-                setFormData({
-                    title: '',
-                    content: '',
-                });
+            setMemoContent('');
 
-                setIsLoading(false);
+            closeDialog();
+        } catch (error) {
+            console.error('Error updating memo:', error);
+        }
+    };
 
-                closeDialog();
-            } catch (error) {
-                console.error('Error updating memo:', error);
-                setIsLoading(false);
-            }
+    const handleDelete = async () => {
+        try {
+            await deleteDoc(doc(firestore, 'memos', memoId));
+            console.log('memo deleted successfully');
+            closeDialog();
+        } catch (error) {
+            console.error('Error deleting memo: ', error);
         }
     };
 
@@ -117,7 +98,7 @@ const EditMemo = ({ memoId, onDialogOpen, onDialogClose }) => {
                 <Dialog
                     as='div'
                     className='relative z-50'
-                    onClose={closeDialog}
+                    onClose={handleEditMemo}
                     initialFocus={initialFocusRef}
                 >
                     <Transition.Child
@@ -144,54 +125,41 @@ const EditMemo = ({ memoId, onDialogOpen, onDialogClose }) => {
                                 leaveTo='opacity-0 scale-95'
                             >
                                 <Dialog.Panel className='w-full max-w-xl transform overflow-hidden rounded-2xl bg-white px-3 py-5 text-left align-middle shadow-xl transition-all'>
-                                    <form
-                                        noValidate
-                                        autoComplete='off'
-                                        onSubmit={handleEditMemo}
-                                    >
-                                        <div className=''>
-                                            <input
-                                                type='text'
-                                                id='title'
-                                                name='title'
-                                                placeholder='Title'
-                                                spellCheck
-                                                value={formData.title}
-                                                onChange={handleInputChange}
-                                                className='inline-block w-full border-none bg-transparent font-medium placeholder:font-normal focus:outline-none focus-visible:ring-0'
-                                            />
-                                        </div>
+                                    <div>
                                         <div className=''>
                                             <textarea
                                                 id='content'
                                                 name='content'
-                                                rows='10'
+                                                rows='8'
                                                 placeholder='Take a note...'
                                                 spellCheck
                                                 ref={initialFocusRef}
-                                                value={formData.content}
+                                                value={memoContent}
                                                 onChange={handleInputChange}
                                                 className='inline-block w-full resize-none border-none bg-transparent focus:outline-none focus-visible:ring-0'
-                                            ></textarea>
+                                            />
                                         </div>
-                                        <div className='mt-4 flex px-3'>
-                                            <div className='ml-auto flex gap-3'>
+                                        <div className='my-1 flex h-9 items-center'>
+                                            <div className='flex items-center px-4'>
                                                 <button
                                                     type='button'
-                                                    onClick={closeDialog}
-                                                    className='inline-flex w-[120px] items-center justify-center rounded-full border border-transparent bg-curious-blue-100 px-4 py-2 font-medium text-curious-blue-600 transition-all duration-300 ease-in-out hover:bg-curious-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-curious-blue-500 focus-visible:ring-offset-2 disabled:bg-curious-blue-50 disabled:text-curious-blue-300'
+                                                    onClick={handleDelete}
+                                                    className='flex h-8 w-8 items-center justify-center gap-x-2 rounded-full text-sm transition-all duration-150 ease-in-out hover:bg-gray-200'
                                                 >
-                                                    Cancel
+                                                    <FaRegTrashCan />
                                                 </button>
+                                            </div>
+                                            <div className='ml-auto pr-4'>
                                                 <button
-                                                    type='submit'
-                                                    className='inline-flex w-[120px] items-center justify-center rounded-full border border-transparent bg-curious-blue-500 px-4 py-2 font-medium text-white transition-all duration-300 ease-in-out hover:bg-curious-blue-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-curious-blue-500 focus-visible:ring-offset-2 active:bg-curious-blue-700 disabled:bg-curious-blue-100 disabled:text-curious-blue-400'
+                                                    type='button'
+                                                    onClick={handleEditMemo}
+                                                    className='rounded px-6 py-2 text-sm font-medium transition-all duration-150 ease-in-out hover:bg-gray-200'
                                                 >
-                                                    Save
+                                                    Close
                                                 </button>
                                             </div>
                                         </div>
-                                    </form>
+                                    </div>
                                 </Dialog.Panel>
                             </Transition.Child>
                         </div>
