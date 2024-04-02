@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from 'react';
+import { Fragment, useContext, useEffect, useState } from 'react';
 import { AuthContext } from '../../contexts/AuthContext';
 import { firestore } from '../../services/firebase';
 import {
@@ -64,7 +64,14 @@ const MemoContainer = () => {
         return () => {};
     }, []);
 
-    // console.log(memos);
+    const renderTextWithLineBreaks = (text) => {
+        return text.split('\n').map((line, index) => (
+            <Fragment key={index}>
+                {line}
+                {index !== text.split('\n').length - 1 && <br />}
+            </Fragment>
+        ));
+    };
 
     return (
         <>
@@ -79,7 +86,7 @@ const MemoContainer = () => {
                 >
                     <Masonry gutter='1rem'>
                         {memos.map((memo) => {
-                            const { createdAt, updatedAt } = memo;
+                            const { content, createdAt, updatedAt } = memo;
 
                             const isCreated =
                                 createdAt.seconds === updatedAt.seconds &&
@@ -104,7 +111,7 @@ const MemoContainer = () => {
                                         openDialog(memo.id);
                                     }}
                                 >
-                                    {memo?.content ?? ''}
+                                    {renderTextWithLineBreaks(content)}
                                 </MemoCard>
                             );
                         })}
@@ -112,7 +119,11 @@ const MemoContainer = () => {
                 </ResponsiveMasonry>
             </section>
 
-            <EditMemoDialog memoId={activeMemoId} onDialogOpen={isOpen} onDialogClose={setIsOpen} />
+            <EditMemoDialog
+                memoId={activeMemoId}
+                onDialogOpen={isOpen}
+                onDialogClose={setIsOpen}
+            />
         </>
     );
 };
