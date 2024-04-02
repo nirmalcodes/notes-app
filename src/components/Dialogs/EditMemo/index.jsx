@@ -64,17 +64,23 @@ const EditMemo = ({ memoId, onDialogOpen, onDialogClose }) => {
         }
 
         try {
+            const memoRef = doc(firestore, 'memos', memoId);
+            const memoSnapshot = await getDoc(memoRef);
+            const existingMemoData = memoSnapshot.data();
+
+            if (existingMemoData.content === memoContent) {
+                closeDialog();
+                return;
+            }
+
             const newMemoData = {
                 content: memoContent,
                 updatedAt: serverTimestamp(),
             };
 
-            const memoRef = doc(firestore, 'memos', memoId);
             await updateDoc(memoRef, newMemoData);
 
             console.log('Memo updated successfully');
-
-            setMemoContent('');
 
             closeDialog();
         } catch (error) {
