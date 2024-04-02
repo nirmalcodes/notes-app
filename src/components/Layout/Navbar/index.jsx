@@ -1,12 +1,12 @@
 import { Fragment, useContext, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { CiMemoPad } from 'react-icons/ci';
 import { Menu, Transition } from '@headlessui/react';
-import LogInDialog from '../../Dialogs/LogIn';
 import { AuthContext } from '../../../contexts/AuthContext';
-import { signOut } from '@firebase/auth';
 import { auth } from '../../../services/firebase';
+import { signOut } from '@firebase/auth';
+import { CiMemoPad } from 'react-icons/ci';
 import { FaUser } from 'react-icons/fa6';
+import LogInDialog from '../../Dialogs/LogIn';
 
 const Navbar = () => {
     const { user } = useContext(AuthContext);
@@ -80,7 +80,7 @@ const Navbar = () => {
                             <button
                                 type='button'
                                 onClick={openDialog}
-                                className='rounded-full bg-curious-blue-500 px-8 py-2 text-white transition-all duration-300 ease-in-out hover:bg-curious-blue-600 active:bg-curious-blue-700 disabled:bg-curious-blue-100 disabled:text-curious-blue-400'
+                                className='rounded-full bg-curious-blue-500 px-8 py-2 text-start font-medium text-white transition-all duration-300 ease-in-out hover:bg-curious-blue-600 active:bg-curious-blue-700 disabled:bg-curious-blue-100 disabled:text-curious-blue-400'
                             >
                                 Login
                             </button>

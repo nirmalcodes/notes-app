@@ -29,50 +29,47 @@ const MemoContainer = () => {
     };
 
     useEffect(() => {
-        const fetchAllMemo = () => {
-            try {
-                if (!user) {
-                    return;
-                }
+        if (!user) {
+            return;
+        }
 
-                const memoRef = collection(firestore, 'memos');
-                const q = query(
-                    memoRef,
-                    where('createdBy', '==', user.uid),
-                    orderBy('updatedAt', 'desc')
-                );
+        const memoRef = collection(firestore, 'memos');
+        const q = query(
+            memoRef,
+            where('createdBy', '==', user.uid),
+            orderBy('updatedAt', 'desc')
+        );
 
-                const unsubscribe = onSnapshot(q, (querySnapshot) => {
-                    const fetchedMemos = querySnapshot.docs.map((doc) => {
-                        const memoData = doc.data();
-                        const { createdAt, updatedAt } = memoData;
+        const unsubscribe = onSnapshot(q, (querySnapshot) => {
+            const fetchedMemos = querySnapshot.docs.map((doc) => {
+                const memoData = doc.data();
+                const { createdAt, updatedAt } = memoData;
 
-                        const isCreated =
-                            createdAt?.seconds === updatedAt?.seconds &&
-                            createdAt?.nanoseconds === updatedAt?.nanoseconds;
+                const isCreated =
+                    createdAt?.seconds === updatedAt?.seconds &&
+                    createdAt?.nanoseconds === updatedAt?.nanoseconds;
 
-                        return {
-                            id: doc.id,
-                            ...memoData,
-                            status: isCreated ? 'Created' : 'Edited',
-                        };
-                    });
+                return {
+                    id: doc.id,
+                    ...memoData,
+                    status: isCreated ? 'Created' : 'Edited',
+                };
+            });
 
-                    setMemos(fetchedMemos);
-                });
-
-                return unsubscribe;
-            } catch (error) {
-                // console.error('Error fetching memos:', error);
-            }
-        };
-
-        const unsubscribe = fetchAllMemo();
+            setMemos(fetchedMemos);
+        });
 
         return () => {
             unsubscribe();
         };
-    }, []);
+    }, [user]);
+
+    useEffect(() => {
+        if (!user) {
+            setMemos([]);
+        }
+        return () => {};
+    }, [user]);
 
     const renderTextWithLineBreaks = (text) => {
         return text.split('\n').map((line, index) => (
