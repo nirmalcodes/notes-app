@@ -3,6 +3,7 @@ import { Dialog, Transition } from '@headlessui/react';
 import { AuthContext } from '../../../contexts/AuthContext';
 import { firestore } from '../../../services/firebase';
 import { addDoc, collection, serverTimestamp } from '@firebase/firestore';
+import CryptoJS from 'crypto-js';
 
 const AddMemo = ({ onDialogOpen, onDialogClose }) => {
     const { user } = useContext(AuthContext);
@@ -24,9 +25,16 @@ const AddMemo = ({ onDialogOpen, onDialogClose }) => {
             return;
         }
 
+        console.log('first');
+
         try {
+            const encryptedContent = CryptoJS.AES.encrypt(
+                memoContent,
+                user.uid
+            ).toString();
+
             const newMemoData = {
-                content: memoContent,
+                content: encryptedContent,
                 createdBy: user.uid,
                 createdAt: serverTimestamp(),
                 updatedAt: serverTimestamp(),

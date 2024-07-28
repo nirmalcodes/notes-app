@@ -11,12 +11,16 @@ import {
 import Masonry, { ResponsiveMasonry } from 'react-responsive-masonry';
 import MemoCard from '../../components/MemoCard';
 import EditMemoDialog from '../../components/Dialogs/EditMemo';
+import SkeletonCard from '../../components/SkeletonCard';
+
+import CryptoJS from 'crypto-js';
 
 const MemoContainer = () => {
     const { user } = useContext(AuthContext);
     const [memos, setMemos] = useState([]);
     const [isOpen, setIsOpen] = useState(false);
     const [activeMemoId, setActiveMemoId] = useState(null);
+    const [isLoading, setisLoading] = useState(true);
 
     const openDialog = (id) => {
         setActiveMemoId(id);
@@ -43,7 +47,12 @@ const MemoContainer = () => {
         const unsubscribe = onSnapshot(q, (querySnapshot) => {
             const fetchedMemos = querySnapshot.docs.map((doc) => {
                 const memoData = doc.data();
-                const { createdAt, updatedAt } = memoData;
+                const { createdAt, updatedAt, content } = memoData;
+
+                const decryptedContent = CryptoJS.AES.decrypt(
+                    content,
+                    user.uid
+                ).toString(CryptoJS.enc.Utf8);
 
                 const isCreated =
                     createdAt?.seconds === updatedAt?.seconds &&
@@ -52,11 +61,13 @@ const MemoContainer = () => {
                 return {
                     id: doc.id,
                     ...memoData,
+                    content: decryptedContent,
                     status: isCreated ? 'Created' : 'Edited',
                 };
             });
 
             setMemos(fetchedMemos);
+            setisLoading(false);
         });
 
         return () => {
@@ -79,6 +90,27 @@ const MemoContainer = () => {
             </Fragment>
         ));
     };
+
+    if (isLoading) {
+        return (
+            <section className='container p-4'>
+                <ResponsiveMasonry
+                    columnsCountBreakPoints={{
+                        424: 1,
+                        639: 2,
+                        1023: 3,
+                        1100: 5,
+                    }}
+                >
+                    <Masonry gutter='1rem'>
+                        {Array.from({ length: 3 }, (_, index) => (
+                            <SkeletonCard key={index} />
+                        ))}
+                    </Masonry>
+                </ResponsiveMasonry>
+            </section>
+        );
+    }
 
     return (
         <>
