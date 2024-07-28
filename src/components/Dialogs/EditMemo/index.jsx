@@ -10,6 +10,7 @@ import {
     updateDoc,
 } from '@firebase/firestore';
 import { FaRegTrashCan } from 'react-icons/fa6';
+import CryptoJS from 'crypto-js';
 
 const EditMemo = ({ memoId, onDialogOpen, onDialogClose }) => {
     const { user } = useContext(AuthContext);
@@ -34,7 +35,13 @@ const EditMemo = ({ memoId, onDialogOpen, onDialogClose }) => {
                     // console.log('Document data:', docSnap.data());
                     const memoData = docSnap.data();
                     const { content } = memoData;
-                    setMemoContent(content);
+
+                    const decryptedContent = CryptoJS.AES.decrypt(
+                        content,
+                        user.uid
+                    ).toString(CryptoJS.enc.Utf8);
+
+                    setMemoContent(decryptedContent);
                 } else {
                     // console.log('No such document!');
                 }
@@ -68,13 +75,18 @@ const EditMemo = ({ memoId, onDialogOpen, onDialogClose }) => {
             const memoSnapshot = await getDoc(memoRef);
             const existingMemoData = memoSnapshot.data();
 
-            if (existingMemoData.content === memoContent) {
+            const encryptedContent = CryptoJS.AES.encrypt(
+                memoContent,
+                user.uid
+            ).toString();
+
+            if (existingMemoData.content === encryptedContent) {
                 closeDialog();
                 return;
             }
 
             const newMemoData = {
-                content: memoContent,
+                content: encryptedContent,
                 updatedAt: serverTimestamp(),
             };
 
