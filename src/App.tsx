@@ -1,15 +1,19 @@
 import React from 'react';
-import { BrowserRouter, Route, Routes } from 'react-router';
-import Home from './pages/Home';
+import { ErrorBoundary } from 'react-error-boundary';
+import { AuthProvider } from './contexts/AuthContext';
+import AppRoutes from './routes/AppRoutes';
 
 const App = () => {
+  const isProd = import.meta.env.PROD;
+  console.log('Development mode:', !isProd);
+
   return (
     <>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Home />} />
-        </Routes>
-      </BrowserRouter>
+      <ErrorBoundary fallback={<div>Something went wrong.</div>}>
+        <AuthProvider>
+          <AppRoutes />
+        </AuthProvider>
+      </ErrorBoundary>
     </>
   );
 };
