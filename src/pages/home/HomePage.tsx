@@ -1,6 +1,10 @@
 import React from 'react';
+import { useAuthContext } from '@/contexts/AuthContext';
 
 const HomePage = () => {
+  const { user } = useAuthContext();
+  console.log('USER: ', user);
+
   return (
     <>
       <div>
