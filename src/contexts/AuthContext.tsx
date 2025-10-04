@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
+import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
 import type { User } from '@firebase/auth';
 import {
   login as firebaseLogin,
@@ -24,7 +24,7 @@ const AuthContext = createContext<AuthContextType | null>(null);
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const cachedUser = secureLoadUser();
   const [user, setUser] = useState<User | null>(cachedUser);
-  const [loading, setLoading] = useState<boolean>(!cachedUser);
+  const [loading, setLoading] = useState<boolean>(true);
 
   // useEffect(() => {
   //   const cached = secureLoadUser();
@@ -37,13 +37,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     const unsubscribe = onAuthChange((firebaseUser) => {
       if (firebaseUser) {
-        setUser(firebaseUser);
-        secureStoreUser({
-          uid: firebaseUser.uid,
-          email: firebaseUser.email,
-          displayName: firebaseUser.displayName,
-          photoURL: firebaseUser.photoURL,
-        });
+        if (firebaseUser.uid !== user?.uid) {
+          setUser(firebaseUser);
+          secureStoreUser({
+            uid: firebaseUser.uid,
+            email: firebaseUser.email,
+            displayName: firebaseUser.displayName,
+            photoURL: firebaseUser.photoURL,
+          });
+        }
       } else {
         setUser(null);
         clearStoredUser();
@@ -55,59 +57,66 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     return () => unsubscribe();
   }, []);
 
-  const contextValue: AuthContextType = {
-    user,
-    loading,
+  const login = async (email: string, password: string) => {
+    const result = await firebaseLogin(email, password);
+    const firebaseUser = result.user;
+    setUser(firebaseUser);
 
-    login: async (email, password) => {
-      const result = await firebaseLogin(email, password);
-      const firebaseUser = result.user;
-      setUser(firebaseUser);
-
-      secureStoreUser({
-        uid: firebaseUser.uid,
-        email: firebaseUser.email,
-        displayName: firebaseUser.displayName,
-        photoURL: firebaseUser.photoURL,
-      });
-    },
-
-    register: async (email, password) => {
-      const result = await firebaseRegister(email, password);
-      const firebaseUser = result.user;
-      setUser(firebaseUser);
-
-      await createUserProfile(firebaseUser);
-
-      secureStoreUser({
-        uid: firebaseUser.uid,
-        email: firebaseUser.email,
-        displayName: firebaseUser.displayName,
-        photoURL: firebaseUser.photoURL,
-      });
-    },
-
-    googleLogin: async () => {
-      const result = await loginWithGoogle();
-      const firebaseUser = result.user;
-      setUser(firebaseUser);
-
-      await createUserProfile(firebaseUser);
-
-      secureStoreUser({
-        uid: firebaseUser.uid,
-        email: firebaseUser.email,
-        displayName: firebaseUser.displayName,
-        photoURL: firebaseUser.photoURL,
-      });
-    },
-
-    logout: async () => {
-      await firebaseLogout();
-      setUser(null);
-      clearStoredUser();
-    },
+    secureStoreUser({
+      uid: firebaseUser.uid,
+      email: firebaseUser.email,
+      displayName: firebaseUser.displayName,
+      photoURL: firebaseUser.photoURL,
+    });
   };
+
+  const register = async (email: string, password: string) => {
+    const result = await firebaseRegister(email, password);
+    const firebaseUser = result.user;
+    setUser(firebaseUser);
+
+    await createUserProfile(firebaseUser);
+
+    secureStoreUser({
+      uid: firebaseUser.uid,
+      email: firebaseUser.email,
+      displayName: firebaseUser.displayName,
+      photoURL: firebaseUser.photoURL,
+    });
+  };
+
+  const googleLoginHandler = async () => {
+    const result = await loginWithGoogle();
+    const firebaseUser = result.user;
+    setUser(firebaseUser);
+
+    await createUserProfile(firebaseUser);
+
+    secureStoreUser({
+      uid: firebaseUser.uid,
+      email: firebaseUser.email,
+      displayName: firebaseUser.displayName,
+      photoURL: firebaseUser.photoURL,
+    });
+  };
+
+  const logoutHandler = async () => {
+    await firebaseLogout();
+    setUser(null);
+    clearStoredUser();
+  };
+
+  const contextValue = useMemo<AuthContextType>(
+    () => ({
+      user,
+      loading,
+      login,
+      register,
+      googleLogin: googleLoginHandler,
+      logout: logoutHandler,
+    }),
+    [user, loading]
+  );
 
   return <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>;
 };
