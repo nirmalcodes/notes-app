@@ -6,7 +6,7 @@ import LoginForm from '@/components/forms/LoginForm';
 
 const LoginPage = () => {
   const { user } = useAuthContext();
-  console.log('USER: ', user);
+  // console.log('USER: ', user);
 
   if (user) {
     return <Navigate to="/" replace />;

@@ -6,7 +6,7 @@ import SignUpForm from '@/components/forms/SignUpForm';
 
 const RegisterPage = () => {
   const { user } = useAuthContext();
-  console.log('USER: ', user);
+  // console.log('USER: ', user);
 
   if (user) {
     return <Navigate to="/" replace />;
