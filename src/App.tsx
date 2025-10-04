@@ -1,6 +1,7 @@
 import React from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import { AuthProvider } from './contexts/AuthContext';
+import { MemoProvider } from './contexts/MemoContext';
 import AppRoutes from './routes/AppRoutes';
 
 const App = () => {
@@ -11,7 +12,9 @@ const App = () => {
     <>
       <ErrorBoundary fallback={<div>Something went wrong.</div>}>
         <AuthProvider>
-          <AppRoutes />
+          <MemoProvider>
+            <AppRoutes />
+          </MemoProvider>
         </AuthProvider>
       </ErrorBoundary>
     </>
