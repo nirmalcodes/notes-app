@@ -4,7 +4,7 @@ import ProtectedRoute from './ProtectedRoute';
 
 import LoginPage from '@/pages/auth/LoginPage';
 import NotFoundPage from '@/pages/NotFoundPage';
-import MainLayout from '@/layouts/main-layout';
+import MainLayout from '@/layouts/MainLayout';
 
 const RegisterPage = lazy(() => import('@/pages/auth/RegisterPage'));
 const HomePage = lazy(() => import('@/pages/home/HomePage'));

@@ -20,11 +20,24 @@ const HomePage = () => {
   if (loading) return <p className="p-4 text-center">Loading memos...</p>;
   console.log('USER: ', user);
 
+  const renderTextWithLineBreaks = (text: string): React.ReactNode => {
+    if (!text) return null;
+
+    const lines = text.split('\n');
+
+    return lines.map((line, index) => (
+      <React.Fragment key={index}>
+        {line}
+        {index < lines.length - 1 && <br />}
+      </React.Fragment>
+    ));
+  };
+
   return (
     <>
       <div className="container mx-auto p-4">
         <h1>Welcome to the Home Page</h1>
-        <div className="mx-auto max-w-2xl p-4">
+        <div className="mx-auto p-4">
           <h1 className="mb-4 text-2xl font-semibold">Your Memos</h1>
 
           {/* Add new memo */}
@@ -53,7 +66,7 @@ const HomePage = () => {
               <li key={memo.id} className="flex items-center justify-between rounded border p-3">
                 <div>
                   <h3 className="font-medium">{memo.title}</h3>
-                  <p className="text-sm text-gray-600">{memo.content}</p>
+                  <p className="text-sm text-gray-600">{renderTextWithLineBreaks(memo.content)}</p>
                 </div>
                 <button onClick={() => deleteMemo(memo.id)} className="text-red-600 hover:underline">
                   Delete
@@ -62,12 +75,12 @@ const HomePage = () => {
             ))}
           </ul>
 
-          <div className="mt-6 columns-1 gap-4 md:columns-2 lg:columns-3">
+          <div className="mt-6 columns-1 gap-4 md:columns-2 lg:columns-3 xl:columns-4">
             {memos.map((memo) => (
               <Card key={memo.id} className="mb-4 break-inside-avoid">
                 <CardContent>
                   <h3 className="mb-2 text-lg font-semibold">{memo.title}</h3>
-                  <p className="text-sm text-gray-700">{memo.content}</p>
+                  <p className="text-sm text-gray-700">{renderTextWithLineBreaks(memo.content)}</p>
                 </CardContent>
               </Card>
             ))}
