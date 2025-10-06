@@ -10,6 +10,7 @@ import { Link, useNavigate } from 'react-router';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../ui/form';
 import { Input } from '../ui/input';
 import { Eye, EyeOff, Loader2Icon } from 'lucide-react';
+import { toast } from 'sonner';
 
 const LoginForm = () => {
   const { login, googleLogin } = useAuthContext();
@@ -35,19 +36,23 @@ const LoginForm = () => {
   const onSubmit = async (data: LoginFormData) => {
     try {
       await login(data.email, data.password);
+      toast.success('Login successful!');
       navigate('/', { replace: true });
     } catch (err: any) {
       //   setError('Login failed. Please check your credentials.');
+      toast.error('Login failed. Please check your credentials.');
     }
   };
 
   const handleGoogleLogin = async () => {
     try {
       await googleLogin();
+      toast.success('Login successful!');
       navigate('/', { replace: true });
     } catch (err: any) {
       console.error('Google login failed:', err);
       //   setError('Google login failed. Please try again.');
+      toast.error('Google login failed. Please try again.');
     }
   };
 

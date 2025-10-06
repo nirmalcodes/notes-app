@@ -3,6 +3,8 @@ import { ErrorBoundary } from 'react-error-boundary';
 import { AuthProvider } from './contexts/AuthContext';
 import { MemoProvider } from './contexts/MemoContext';
 import AppRoutes from './routes/AppRoutes';
+import { Toaster } from './components/ui/sonner';
+import { ThemeProvider } from './components/common/ThemeProvider';
 
 const App = () => {
   const isProd = import.meta.env.PROD;
@@ -11,11 +13,14 @@ const App = () => {
   return (
     <>
       <ErrorBoundary fallback={<div>Something went wrong.</div>}>
-        <AuthProvider>
-          <MemoProvider>
-            <AppRoutes />
-          </MemoProvider>
-        </AuthProvider>
+        <ThemeProvider defaultTheme="light" storageKey="theme">
+          <AuthProvider>
+            <MemoProvider>
+              <AppRoutes />
+              <Toaster richColors />
+            </MemoProvider>
+          </AuthProvider>
+        </ThemeProvider>
       </ErrorBoundary>
     </>
   );

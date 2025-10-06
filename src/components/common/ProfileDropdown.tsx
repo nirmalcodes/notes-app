@@ -9,6 +9,7 @@ import {
 import { useAuthContext } from '@/contexts/AuthContext';
 import { Button } from '../ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
+import { toast } from 'sonner';
 
 const ProfileDropdown = () => {
   const { user, logout } = useAuthContext();
@@ -16,6 +17,7 @@ const ProfileDropdown = () => {
   const handleLogout = async () => {
     try {
       await logout();
+      toast.success('Logged out successfully');
     } catch (error) {
       console.error('Error logging out:', error);
     }
