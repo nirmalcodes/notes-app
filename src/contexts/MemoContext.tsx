@@ -14,7 +14,7 @@ import {
   where,
 } from '@firebase/firestore';
 import { db } from '@/services/firebase';
-import CryptoJS from 'crypto-js';
+import { decryptMemo, encryptMemo } from '@/lib/memoCrypto';
 
 const MemoContext = createContext<MemoContextProps | undefined>(undefined);
 
@@ -38,16 +38,22 @@ export const MemoProvider = ({ children }: MemoProviderProps) => {
     const unsubscribe = onSnapshot(
       q,
       (snapshot) => {
-        const data = snapshot.docs.map(
-          (docSnap) =>
-            ({
-              id: docSnap.id,
-              ...docSnap.data(),
-              content:
-                CryptoJS.AES.decrypt(docSnap.data().content, user.uid).toString(CryptoJS.enc.Utf8) ||
-                docSnap.data().content,
-            }) as Memo
-        );
+        const data = snapshot.docs.map((docSnap) => {
+          const memoData = docSnap.data();
+          const decryptedContent = decryptMemo(memoData.content, user.uid);
+
+          const isCreated =
+            memoData.createdAt?.seconds === memoData.updatedAt?.seconds &&
+            memoData.createdAt?.nanoseconds === memoData.updatedAt?.nanoseconds;
+
+          return {
+            id: docSnap.id,
+            ...memoData,
+            content: decryptedContent,
+            status: isCreated ? 'Created' : 'Edited',
+          } as Memo;
+        });
+
         setMemos(data);
         setLoading(false);
       },
@@ -64,8 +70,11 @@ export const MemoProvider = ({ children }: MemoProviderProps) => {
   const addMemo = useCallback(
     async (data: MemoInput) => {
       if (!user) throw new Error('User not logged in');
+      const encryptedContent = encryptMemo(data.content, user.uid);
+
       await addDoc(collection(db, 'memos'), {
-        ...data,
+        title: data.title,
+        content: encryptedContent,
         createdBy: user.uid,
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
@@ -74,17 +83,28 @@ export const MemoProvider = ({ children }: MemoProviderProps) => {
     [user]
   );
 
-  const updateMemo = useCallback(async (id: string, data: MemoUpdate) => {
-    const memoRef = doc(db, 'memos', id);
-    await updateDoc(memoRef, {
-      ...data,
-      updatedAt: serverTimestamp(),
-    });
-  }, []);
+  const updateMemo = useCallback(
+    async (id: string, data: MemoUpdate) => {
+      if (!user) throw new Error('User not logged in');
+
+      const memoRef = doc(db, 'memos', id);
+      const updatePayload: Partial<MemoUpdate> = { updatedAt: serverTimestamp() };
+
+      if (data.content) {
+        updatePayload.content = encryptMemo(data.content, user.uid);
+      }
+
+      if (data.title) {
+        updatePayload.title = data.title;
+      }
+
+      await updateDoc(memoRef, updatePayload);
+    },
+    [user]
+  );
 
   const deleteMemo = useCallback(async (id: string) => {
-    const memoRef = doc(db, 'memos', id);
-    await deleteDoc(memoRef);
+    await deleteDoc(doc(db, 'memos', id));
   }, []);
 
   const contextValue = useMemo<MemoContextProps>(
@@ -92,7 +112,6 @@ export const MemoProvider = ({ children }: MemoProviderProps) => {
       memos,
       loading,
       error,
-      fetchMemos: async () => {},
       addMemo,
       updateMemo,
       deleteMemo,

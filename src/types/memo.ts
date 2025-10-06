@@ -1,5 +1,5 @@
 import React from 'react';
-import type { Timestamp } from '@firebase/firestore';
+import type { FieldValue, Timestamp } from '@firebase/firestore';
 
 export interface Memo {
   id: string;
@@ -8,6 +8,7 @@ export interface Memo {
   createdBy: string;
   createdAt: Timestamp;
   updatedAt: Timestamp;
+  status?: 'Created' | 'Edited';
 }
 export interface MemoInput {
   title: string;
@@ -17,6 +18,7 @@ export interface MemoInput {
 export interface MemoUpdate {
   title?: string;
   content?: string;
+  updatedAt?: FieldValue | Timestamp;
 }
 
 export interface MemoListProps {
@@ -44,7 +46,6 @@ export interface MemoState {
 }
 
 export interface MemoContextProps extends MemoState {
-  fetchMemos: () => Promise<void>;
   addMemo: (data: MemoInput) => Promise<void>;
   updateMemo: (id: string, data: MemoUpdate) => Promise<void>;
   deleteMemo: (id: string) => Promise<void>;
