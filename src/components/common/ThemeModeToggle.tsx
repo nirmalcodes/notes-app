@@ -1,5 +1,5 @@
 import React from 'react';
-import { useTheme } from './theme-provider';
+import { useTheme } from './ThemeProvider';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '../ui/dropdown-menu';
 import { Button } from '../ui/button';
 import { Moon, Sun } from 'lucide-react';

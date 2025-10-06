@@ -1,9 +1,9 @@
 import React from 'react';
-import { ThemeProvider } from '@/components/common/theme-provider';
+import { ThemeProvider } from '@/components/common/ThemeProvider';
 import { Link, Outlet } from 'react-router';
-import ThemeModeToggle from '@/components/common/theme-mode-toggle';
+import ThemeModeToggle from '@/components/common/ThemeModeToggle';
 import { NotebookPen } from 'lucide-react';
-import ProfileDropdown from '@/components/common/profile-dropdown';
+import ProfileDropdown from '@/components/common/ProfileDropdown';
 
 const MainLayout = () => {
   const DateYear: number = new Date().getFullYear();
