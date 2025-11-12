@@ -11,7 +11,7 @@ export interface Memo {
   status?: 'Created' | 'Edited';
 }
 export interface MemoInput {
-  title: string;
+  title?: string;
   content: string;
 }
 
