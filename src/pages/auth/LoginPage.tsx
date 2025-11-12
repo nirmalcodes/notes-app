@@ -2,7 +2,7 @@ import React from 'react';
 import { useAuthContext } from '@/contexts/AuthContext';
 import { Navigate } from 'react-router';
 import { GalleryVerticalEnd } from 'lucide-react';
-import LoginForm from '@/components/forms/LoginForm';
+import LoginForm from '@/components/auth/LoginForm';
 
 const LoginPage = () => {
   const { user } = useAuthContext();
