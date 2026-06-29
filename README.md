@@ -127,4 +127,4 @@ This project is open source and available under the [MIT License](LICENSE).
 **Nirmal Fernando**
 - Portfolio: [srnfernando.vercel.app](https://srnfernando.vercel.app)
 - GitHub: [@nirmalcodes](https://github.com/nirmalcodes)
-- LinkedIn: [Nirmal Fernando](https://linkedin.com/in/nirmal-fernando)
+- LinkedIn: [Nirmal Fernando](https://linkedin.com/in/srnfernando)
